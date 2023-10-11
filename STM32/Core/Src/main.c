@@ -61,6 +61,17 @@ static void MX_GPIO_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
+uint16_t LED [12] = { GPIO_PIN_15, GPIO_PIN_4 , GPIO_PIN_5 , GPIO_PIN_6 ,
+GPIO_PIN_7 , GPIO_PIN_8 , GPIO_PIN_9 , GPIO_PIN_10 ,
+GPIO_PIN_11 , GPIO_PIN_12 , GPIO_PIN_13 ,
+GPIO_PIN_14};
+
+void clearAllClock();
+
+void setNumberOnClock(int num);
+
+void clearNumberOnClock(int num);
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -91,26 +102,58 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint16_t LED [12] = { GPIO_PIN_4 , GPIO_PIN_5 , GPIO_PIN_6 ,
-  GPIO_PIN_7 , GPIO_PIN_8 , GPIO_PIN_9 , GPIO_PIN_10 ,
-  GPIO_PIN_11 , GPIO_PIN_12 , GPIO_PIN_13 ,
-  GPIO_PIN_14 , GPIO_PIN_15 };
 
-  int counter = 0;
+  int second = 0;
+  int minute = 0;
+  int hour = 0;
+
   while (1)
   {
-    /* USER CODE END WHILE */
-	  if(counter <= 11)
+	  setNumberOnClock(second/5);
+	  setNumberOnClock(minute/5);
+	  setNumberOnClock(hour);
+
+	  HAL_Delay(10);
+	  clearNumberOnClock(second/5);
+	  ++second;
+
+	  if(second >= 60)
 	  {
-		  HAL_GPIO_WritePin(GPIOA, LED [counter], SET);
-		  counter++;
-		  HAL_Delay(1000);
+		  clearNumberOnClock(minute/5);
+		  second = 0;
+		  ++minute;
 	  }
-    /* USER CODE BEGIN 3 */
+
+	  if(minute >= 60)
+	  {
+		  clearNumberOnClock(hour);
+		  minute =0;
+		  ++hour;
+	  }
+
+	  if(hour >= 12)
+	  {
+		  hour = 0;
+	  }
+
   }
   /* USER CODE END 3 */
 }
 
+void clearAllClock()
+{
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_All, RESET);
+}
+
+void setNumberOnClock(int num)
+{
+	HAL_GPIO_WritePin(GPIOA, LED[num], SET);
+}
+
+void clearNumberOnClock(int num)
+{
+	HAL_GPIO_WritePin(GPIOA, LED[num], RESET);
+}
 /**
   * @brief System Clock Configuration
   * @retval None
